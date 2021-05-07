@@ -3,9 +3,16 @@ using timeconsole;
 using System.Data.SqlClient;
 using System.Threading;
 // anime database - username: anime passwor: 123
+
+
+/* 
+  For github links:
+  stackoverflow.com/questions/23401652/fatal-the-current-branch-master-has-no-upstream-branch
+  docs.github.com/en/github/importing-your-projects-to-github/adding-an-existing-project-to-github-using-the-command-line
+
+ */
 namespace ConsoleAnimations
 {
-
     class MainClass
     {
        
@@ -19,16 +26,18 @@ namespace ConsoleAnimations
             string search = Console.ReadLine().ToLower();
 
             datas(search);
-            choosef();
+          //  choosef();
 
         }
         static void datas(string cc)
         {
             var con = Connz.sqlConnz;
-
+            /*
             string sql = @"SELECT anime_.anime_title, anime_.anime_description
                            FROM anime_ INNER JOIN anime_charac ON
                            anime_.anime_id = anime_charac.anime_fnum";
+                           */
+            string sql = "SELECT anime_char FROM anime_  INNER JOIN anime_charac ON anime_.anime_title = anime_charac.anime_fnum";
 
             SqlCommand command = new SqlCommand(sql, con);
             con.Open();
@@ -43,6 +52,7 @@ namespace ConsoleAnimations
                     Console.WriteLine();
                 }
             }
+            Console.ReadLine();
             con.Close();
         }
         static void choosef()
