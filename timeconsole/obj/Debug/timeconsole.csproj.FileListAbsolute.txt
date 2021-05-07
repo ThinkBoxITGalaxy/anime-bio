@@ -1,0 +1,6 @@
+C:\Users\jhayr\source\repos\timeconsole\timeconsole\bin\Debug\timeconsole.exe.config
+C:\Users\jhayr\source\repos\timeconsole\timeconsole\bin\Debug\timeconsole.exe
+C:\Users\jhayr\source\repos\timeconsole\timeconsole\bin\Debug\timeconsole.pdb
+C:\Users\jhayr\source\repos\timeconsole\timeconsole\obj\Debug\timeconsole.exe
+C:\Users\jhayr\source\repos\timeconsole\timeconsole\obj\Debug\timeconsole.pdb
+C:\Users\jhayr\source\repos\timeconsole\timeconsole\obj\Debug\timeconsole.csprojAssemblyReference.cache
