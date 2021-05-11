@@ -32,29 +32,57 @@ namespace ConsoleAnimations
         static void datas(string cc)
         {
             var con = Connz.sqlConnz;
-            /*
-            string sql = @"SELECT anime_.anime_title, anime_.anime_description
-                           FROM anime_ INNER JOIN anime_charac ON
-                           anime_.anime_id = anime_charac.anime_fnum";
-                           */
-            string sql = "SELECT anime_char FROM anime_  INNER JOIN anime_charac ON anime_.anime_title = anime_charac.anime_fnum";
+
+            string sql = @"SELECT anime_charac.anime_char 
+                           FROM anime_ INNER JOIN anime_charac 
+                           ON anime_.anime_title = anime_charac.anime_fnum  
+                           Where anime_charac.anime_fnum = '"+cc+"'";
+
+            string sql_desc = @"SELECT anime_description FROM anime_ WHERE anime_title = '"+cc+"'";
 
             SqlCommand command = new SqlCommand(sql, con);
+            SqlCommand command_desc = new SqlCommand(sql_desc, con);
+
             con.Open();
-            using (SqlDataReader reader = command.ExecuteReader())
+            SqlDataReader reader_desc = command_desc.ExecuteReader();
+            while (reader_desc.Read())
             {
-                while (reader.Read())
+                for (int t = 0; t < reader_desc.FieldCount; t++)
                 {
-                    for (int i = 0; i < reader.FieldCount; i++)
-                    {
-                        Console.WriteLine(reader.GetValue(i));
-                    }   
-                    Console.WriteLine();
+                    Console.WriteLine(reader_desc.GetValue(t));
                 }
             }
-            Console.ReadLine();
+            Console.WriteLine();
+            Console.WriteLine("Characters:");
             con.Close();
+
+            con.Open();
+            SqlDataReader reader = command.ExecuteReader();
+            while (reader.Read())
+                {
+                     for (int i = 0; i < reader.FieldCount; i++)
+                     {
+                         Console.WriteLine(reader.GetValue(i));
+                     }
+                }
+
+            string char_ = Console.ReadLine();
+            string res_ = "";
+            switch (char_)
+            {
+                case "naruto":
+                    res_ = "anime_title";
+                    break;
+            
+            }
+
+            
+            con.Close();
+
+        
         }
+        // Still working from top of this comment
+        // Pending from this comment and below
         static void choosef()
         {
             Console.Write("...");
