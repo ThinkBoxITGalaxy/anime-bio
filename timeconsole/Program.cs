@@ -18,11 +18,17 @@ namespace ConsoleAnimations
        
         public static void Main(string[] args)
         {
-       
+
             // Console.Write("Command Prompt...");
             // char charyn;
             //Console.ReadKey().Key == ConsoleKey.Enter
             //charyn = Console.ReadKey().KeyChar;
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
+            //Console.BackgroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("Anime Wikipedia\n");
+
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.Write("Search: ");
             string search = Console.ReadLine().ToLower();
 
             datas(search);
@@ -72,6 +78,7 @@ namespace ConsoleAnimations
             bool w = true;
             while(w)
             {
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 string char_ = Console.ReadLine();
                 string sql_search = @"SELECT anime_charac.anime_desc 
                            FROM anime_ INNER JOIN anime_charac 
@@ -88,11 +95,16 @@ namespace ConsoleAnimations
                         Console.ForegroundColor = ConsoleColor.Cyan;
                         Console.WriteLine(reader_search.GetValue(t));
                     }
+                    Console.WriteLine();
                 }
                 con.Close();
                 if (char_ == "exit")
                 {
                     w = false;
+                }
+                if (char_ == "help")
+                {
+                    Console.WriteLine(@"exit - Terminate the window");
                 }
             }
             
