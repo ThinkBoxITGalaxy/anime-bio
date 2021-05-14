@@ -15,25 +15,28 @@ namespace ConsoleAnimations
 {
     class MainClass
     {
-       
+
         public static void Main(string[] args)
         {
-
-            // Console.Write("Command Prompt...");
             // char charyn;
             //Console.ReadKey().Key == ConsoleKey.Enter
             //charyn = Console.ReadKey().KeyChar;
             Console.ForegroundColor = ConsoleColor.DarkCyan;
-            //Console.BackgroundColor = ConsoleColor.Yellow;
             Console.WriteLine("Anime Wikipedia\n");
 
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.Write("Search: ");
             string search = Console.ReadLine().ToLower();
-
-            datas(search);
-          //  choosef();
-
+            if (string.IsNullOrEmpty(search))
+            {
+                Console.WriteLine("Please input your favorite anime");
+            }
+            else
+            {
+                datas(search);
+            }
+           
+            //  choosef();
         }
         static void datas(string cc)
         {
@@ -42,45 +45,51 @@ namespace ConsoleAnimations
             string sql = @"SELECT anime_charac.anime_char 
                            FROM anime_ INNER JOIN anime_charac 
                            ON anime_.anime_title = anime_charac.anime_fnum  
-                           Where anime_charac.anime_fnum = '"+cc+"'";
+                           Where anime_charac.anime_fnum = '" + cc + "'";
 
-            string sql_desc = @"SELECT anime_description FROM anime_ WHERE anime_title = '"+cc+"'";
+            string sql_desc = @"SELECT anime_description FROM anime_ WHERE anime_title = '" + cc + "'";
 
             SqlCommand command = new SqlCommand(sql, con);
             SqlCommand command_desc = new SqlCommand(sql_desc, con);
 
             con.Open();
+            string desc = "";
             SqlDataReader reader_desc = command_desc.ExecuteReader();
             while (reader_desc.Read())
             {
-                for (int t = 0; t < reader_desc.FieldCount; t++)
-                {
                     Console.ForegroundColor = ConsoleColor.DarkCyan;
-                    Console.WriteLine(reader_desc.GetValue(t));
-                }
+                    desc = reader_desc[0].ToString();
             }
-            Console.WriteLine();
+           
+            Console.WriteLine(desc + "\n");
+            
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("Characters:");
             con.Close();
 
+            // View characters
             con.Open();
             SqlDataReader reader = command.ExecuteReader();
             while (reader.Read())
+            {
+                for (int i = 0; i < reader.FieldCount; i++)
                 {
-                     for (int i = 0; i < reader.FieldCount; i++)
-                     {
                     Console.ForegroundColor = ConsoleColor.DarkYellow;
                     Console.WriteLine(reader.GetValue(i));
-                     }
                 }
+                
+            }
+            Console.WriteLine();
             con.Close();
+
+            // search
             bool w = true;
-            while(w)
+            while (w)
             {
                 Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.Write("Search characters: ");
                 string char_ = Console.ReadLine();
-                string sql_search = @"SELECT anime_charac.anime_desc 
+                string sql_search = @"SELECT anime_charac.anime_desc,anime_charac.anime_persona,anime_abilities
                            FROM anime_ INNER JOIN anime_charac 
                            ON anime_.anime_title = anime_charac.anime_fnum  
                            Where anime_charac.anime_char = '" + char_ + "'";
@@ -94,8 +103,9 @@ namespace ConsoleAnimations
                     {
                         Console.ForegroundColor = ConsoleColor.Cyan;
                         Console.WriteLine(reader_search.GetValue(t));
+                        Console.WriteLine();
                     }
-                    Console.WriteLine();
+                   
                 }
                 con.Close();
                 if (char_ == "exit")
@@ -104,11 +114,20 @@ namespace ConsoleAnimations
                 }
                 if (char_ == "help")
                 {
-                    Console.WriteLine(@"exit - Terminate the window");
+                    Console.WriteLine("exit - Terminate the window\nclear - Back to main page");
+                }
+                if (char_ == "clear")
+                {
+                    Console.Clear();
+                    Console.ForegroundColor = ConsoleColor.DarkCyan;
+                    Console.WriteLine("Anime Wikipedia\n");
+
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.Write("Search: ");
                 }
             }
-            
-           // Console.Read();
+
+            // Console.Read();
         }
         // Still working from top of this comment--------------------------------------------------------------------------------------------
         // Pending from this comment and below-----------------------------------------------------------------------------------------------
@@ -116,10 +135,10 @@ namespace ConsoleAnimations
         {
             Console.Write("...");
             Console.WriteLine();
-           
+
             string _forms = Console.ReadLine();
             form(_forms);
-           
+
 
         }
         static int time = 90;
@@ -142,7 +161,7 @@ namespace ConsoleAnimations
                 Console.SetCursorPosition(Console.CursorLeft - 1, Console.CursorTop);
                 Thread.Sleep(time);
                 tt--;
-        
+
             }
         }
         static void form(string a)
@@ -187,15 +206,15 @@ namespace ConsoleAnimations
                     Console.Write(timedate);
                     Console.WriteLine();
 
-               /*---char _hourdate = hourdate[0];
-                    int int_hourdate = Convert.ToInt32(_hourdate);
-                    int int_hourdateconv = int_hourdate - '0';
-                    hugenumbers(int_hourdateconv);
+                    /*---char _hourdate = hourdate[0];
+                         int int_hourdate = Convert.ToInt32(_hourdate);
+                         int int_hourdateconv = int_hourdate - '0';
+                         hugenumbers(int_hourdateconv);
 
-                    char hd = hourdate[1];
-                    int hd_int = Convert.ToInt32(hd);
-                    int hdconv_ = hd_int - '0';
-                    hugenumbers(hdconv_); ---*/
+                         char hd = hourdate[1];
+                         int hd_int = Convert.ToInt32(hd);
+                         int hdconv_ = hd_int - '0';
+                         hugenumbers(hdconv_); ---*/
 
                     timer();
                     break;
@@ -215,13 +234,13 @@ Login: Go to login form
                     if (Console.ReadKey().Key == ConsoleKey.Escape)
                     {
                         timer();
-                       
+
                     }
                     break;
 
 
             }
-            
+
         }
         static void final_result(string f_res)
         {
@@ -312,12 +331,12 @@ Login: Go to login form
             int j;
             for (j = 5; j >= 0; j--)
             {
-                if (j == 5){string ww = "Refresh in: ";Console.Write(ww);}
+                if (j == 5) { string ww = "Refresh in: "; Console.Write(ww); }
                 Loading();
                 // Console.SetCursorPosition(Console.CursorLeft - Convert.ToInt32(ww.Length) + 13, Console.CursorTop);
                 Console.Write(" " + j + "...");
                 tt = 3;
-                if (j == 0){Console.Clear();choosef();}
+                if (j == 0) { Console.Clear(); choosef(); }
             }
         }
         static void profile()
@@ -374,10 +393,10 @@ is a fictional character in the One Piece franchise created by Eiichiro Oda.");
                             break;
                     }
                     break;
-                    
+
             }
             Console.ReadLine();
         }
-    }       
+    }
 }
 
