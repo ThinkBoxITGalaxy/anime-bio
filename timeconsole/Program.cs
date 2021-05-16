@@ -2,6 +2,8 @@
 using timeconsole;
 using System.Data.SqlClient;
 using System.Threading;
+using System.Text;
+using System.IO;
 // anime database - username: anime passwor: 123
 
 
@@ -18,10 +20,7 @@ namespace ConsoleAnimations
 
         public static void Main(string[] args)
         {
-            // char charyn;
-            //Console.ReadKey().Key == ConsoleKey.Enter
-            //charyn = Console.ReadKey().KeyChar;
-            Console.ForegroundColor = ConsoleColor.DarkCyan;
+            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Anime Wikipedia\n");
 
             Console.ForegroundColor = ConsoleColor.Yellow;
@@ -30,12 +29,18 @@ namespace ConsoleAnimations
             if (string.IsNullOrEmpty(search))
             {
                 Console.WriteLine("Please input your favorite anime");
+                return;
+            }
+            else if (search == "-insert")
+            {
+                Console.Clear();
+                _add();
             }
             else
             {
                 datas(search);
             }
-           
+
             //  choosef();
         }
         static void datas(string cc)
@@ -57,12 +62,12 @@ namespace ConsoleAnimations
             SqlDataReader reader_desc = command_desc.ExecuteReader();
             while (reader_desc.Read())
             {
-                    Console.ForegroundColor = ConsoleColor.DarkCyan;
-                    desc = reader_desc[0].ToString();
+                Console.ForegroundColor = ConsoleColor.DarkCyan;
+                desc = reader_desc[0].ToString();
             }
-           
+
             Console.WriteLine(desc + "\n");
-            
+
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("Characters:");
             con.Close();
@@ -77,12 +82,11 @@ namespace ConsoleAnimations
                     Console.ForegroundColor = ConsoleColor.DarkYellow;
                     Console.WriteLine(reader.GetValue(i));
                 }
-                
             }
             Console.WriteLine();
             con.Close();
 
-            // search
+            // search char
             bool w = true;
             while (w)
             {
@@ -105,8 +109,8 @@ namespace ConsoleAnimations
                         Console.WriteLine(reader_search.GetValue(t));
                         Console.WriteLine();
                     }
-                   
                 }
+
                 con.Close();
                 if (char_ == "exit")
                 {
@@ -121,13 +125,82 @@ namespace ConsoleAnimations
                     Console.Clear();
                     Console.ForegroundColor = ConsoleColor.DarkCyan;
                     Console.WriteLine("Anime Wikipedia\n");
-
                     Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.Write("Search: ");
                 }
             }
+        }
+        static void _add()
+        {
+            var con = Connz.sqlConnz;
 
-            // Console.Read();
+            Console.WriteLine("Anime Database");
+
+            string sql = "select anime_title from anime_";
+            SqlCommand command = new SqlCommand(sql, con);
+            con.Open();
+            SqlDataReader reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                for (int t = 0; t < reader.FieldCount; t++)
+                {
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.WriteLine(reader.GetValue(t));
+                }
+            }
+            con.Close();
+
+            string _command = Console.ReadLine();
+            switch (_command)
+            {
+                case "-addtitle":
+                    Console.SetIn(new StreamReader(Console.OpenStandardInput(8192)));
+                    Console.Write("Title: "); string ani_title = Console.ReadLine();
+                    Console.Write("Description: "); string ani_desc = Console.ReadLine();
+                    string sql_add = "insert into anime_(anime_title,anime_description) values ('{0}', '{1}')";
+                    string format = String.Format(sql_add, ani_title, ani_desc);
+                    SqlCommand cmd_add = new SqlCommand(format, con);
+                    con.Open();
+                    cmd_add.ExecuteNonQuery();
+                    Console.WriteLine("Added");
+                    Console.Read();
+                    con.Close();
+                    break;
+
+                case "-addchar":
+                    Console.SetIn(new StreamReader(Console.OpenStandardInput(8192)));
+                    Console.Write("Anime: "); string mcworld = CapitalizeWords(Console.ReadLine());
+                    Console.Write("Character: "); string mc = CapitalizeWords(Console.ReadLine());
+                    Console.Write("Bio: "); string mcdesc = Console.ReadLine().Replace("*", "\n\r").Replace('\'', ' ');
+                    Console.Write("Personality: "); string mcpersona = Console.ReadLine().Replace("*", "\n\r").Replace('\'', ' ');
+                    Console.Write("Abilities: "); string mcskills = Console.ReadLine().Replace("*", "\n\r").Replace('\'', ' ');
+
+                    string sql_mc = "insert into anime_charac(anime_fnum,anime_char,anime_desc,anime_persona,anime_abilities) values('{0}','{1}','{2}','{3}','{4}')";
+                    string _format = String.Format(sql_mc, mcworld, mc, mcdesc, mcpersona, mcskills);
+                    SqlCommand cmd_mc = new SqlCommand(_format, con);
+                    con.Open();
+                    cmd_mc.ExecuteNonQuery();
+                    Console.WriteLine("Added mc");
+                    Console.Read();
+                    con.Close();
+                    break;
+            }
+        }
+        public static string CapitalizeWords(string value)
+        {
+            if (value == null)
+                throw new ArgumentNullException("value");
+            if (value.Length == 0)
+                return value;
+            StringBuilder result = new StringBuilder(value);
+            result[0] = char.ToUpper(result[0]);
+            for (int i = 1; i < result.Length; ++i)
+            {
+                if (char.IsWhiteSpace(result[i - 1]))
+                    result[i] = char.ToUpper(result[i]);
+            }
+
+            return result.ToString();
         }
         // Still working from top of this comment--------------------------------------------------------------------------------------------
         // Pending from this comment and below-----------------------------------------------------------------------------------------------
@@ -170,37 +243,6 @@ namespace ConsoleAnimations
             DateTime dt = DateTime.Now;
             switch (login_req)
             {
-                case "Login":
-                    Console.WriteLine("Login Form...");
-                    Console.Write("Username: ");
-                    string uname = Console.ReadLine();
-                    Console.Write("Password: ");
-                    string pword = Console.ReadLine();
-
-                    if (uname == "admin" && pword == "admin")
-                    {
-                        profile();
-                        //int i;
-                        //Console.WriteLine("Login Successfully");
-                        //Console.WriteLine();
-                        //Console.Write("Closed in");
-                        //for (i = 5; i >= 0; i--)
-                        //{
-                        //    Thread.Sleep(1000);
-                        //    Console.Write(" " + i);
-                        //}
-                        //if (i == 20)
-                        //{
-                        //    Console.Clear();
-                        //}
-                    }
-                    else
-                    {
-                        Console.WriteLine("Login Failed");
-                    }
-
-                    break;
-
                 case "checktime":
                     string timedate = dt.ToString("hh:mm:ss tt");
                     Console.Write(timedate);
@@ -237,10 +279,7 @@ Login: Go to login form
 
                     }
                     break;
-
-
             }
-
         }
         static void final_result(string f_res)
         {
@@ -248,84 +287,6 @@ Login: Go to login form
             //string cleaned = f_res.Replace("\n", "").Replace("\r", "");
             //Console.SetCursorPosition(Console.CursorLeft,  Console.CursorTop - 1);
         }
-        /* static void hugenumbers(int _data)
-
-        {
-            int data_ = _data;
-            string res = "";
-            switch (data_)
-            {
-                case 0:
-                    res = "\n▄▄▄▄▄▄\n█    █\n█    █\n█    █\n▀▀▀▀▀▀";
-                    break;
-                case 1:
-                    res = "\n  ▄▄ \n   █ \n   █ \n   █ \n  ▀▀▀";
-                    break;
-                case 2:
-                    res = "\n▄▄▄▄▄▄\n     █\n▄▄▄▄▄█\n█     \n▀▀▀▀▀▀";
-                    break;
-                case 3:
-                    res = @"
-▄▄▄▄▄▄
-     █
-  ▀▀▀█
-     █
-▀▀▀▀▀▀";
-                    break;
-                case 4:
-                    res = @"
-█    █
-█    █
-█▄▄▄▄█
-     █
-     █";
-                    break;
-                case 5:
-                    res = @"
-▄▄▄▄▄▄
-█     
-█▄▄▄▄▄
-     █
-▀▀▀▀▀▀";
-                    break;
-                case 6:
-                    res = @"
-▄▄▄▄▄▄
-█     
-█▄▄▄▄▄
-█    █
-▀▀▀▀▀▀";
-                    break;
-                case 7:
-                    res = @"
-▄▄▄▄▄▄
-     █
-     █
-     █
-     ▀";
-                    break;
-                case 8:
-                    res = @"
-▄▄▄▄▄▄
-█    █
-■■■■■■
-█    █
-▀▀▀▀▀▀";
-                    break;
-                case 9:
-                    res = @"
-▄▄▄▄▄▄
-█    █
-▀▀▀▀▀▀
-     █
-▀▀▀▀▀▀";
-                    break;
-                case 10:
-                    res = "";
-                    break;
-            }
-            final_result(res);
-        }*/
         static void timer()
         {
             int j;
@@ -338,64 +299,6 @@ Login: Go to login form
                 tt = 3;
                 if (j == 0) { Console.Clear(); choosef(); }
             }
-        }
-        static void profile()
-        {
-            Console.WriteLine("Profileee");
-            string ctgry_p = Console.ReadLine().ToLower();
-            switch (ctgry_p)
-            {
-                case "naruto":
-                    string naruto_profile = Console.ReadLine().ToLower();
-                    switch (naruto_profile)
-                    {
-                        case "naruto uzumaki":
-                            Console.WriteLine(@"Naruto Uzumaki (Japanese: うずまき ナルト, Hepburn: Uzumaki Naruto) 
-(/ˈnɑːrətoʊ/) is a fictional character in the manga and anime franchise Naruto, created by Masashi Kishimoto. 
-Serving as the eponymous protagonist of the series, he is a young ninja from the fictional village of Konohagakure (Hidden Leaf Village). 
-The villagers ridicule and ostracize Naruto on account of the Nine-Tailed Demon Fox—a malevolent creature that attacked Konohagakure—that 
-was sealed away in Naruto's body. Despite this, he aspires to become his village's leader, the Hokage in order to receive their approval. 
-His carefree, optimistic and boisterous personality enables him to befriend other Konohagakure ninja, as well as ninja from other villages.
-Naruto appears in the series' films and in other media related to the franchise, including video games and original video animations (OVA), 
-as well as the sequel Boruto: Naruto Next Generations by Ukyo Kodachi, where he is the Hokage and his son, Boruto, is the protagonist.");
-                            break;
-
-                        case "hinata hyuga":
-                            Console.WriteLine(@"Hinata Hyuga (日向 ヒナタ, Hyūga Hinata) is a fictional character in the anime and manga Naruto,
-created by Masashi Kishimoto. Hinata is a kunoichi and the former heiress of the Hyūga clan from the fictional village of Konohagakure.
-She is also a member of Team 8, which consists of herself, Kiba Inuzuka with his ninja dog — Akamaru, Shino Aburame,
-and team leader Kurenai Yuhi. At the start of the series, Hinata has strong admiration toward the main protagonist — Naruto Uzumaki, 
-which eventually turns into love as the story progresses. Hinata has appeared several times in the series' feature films, 
-most notably The Last: Naruto the Movie (2014), which revolves around her relationship with Naruto. She has also been present 
-in other media related to the franchise, including video games, original video animations, and the manga and anime sequel Boruto: 
-Naruto Next Generations (2016), in which she has become the mother of Boruto Uzumaki and Himawari Uzumaki, and is now named 
-Hinata Uzumaki (うずまき ヒナタ, Uzumaki Hinata).");
-                            break;
-                    }
-                    break;
-
-                case "one piece":
-                    string onepiece_profile = Console.ReadLine().ToLower();
-                    switch (onepiece_profile)
-                    {
-                        case "monkey d luffy":
-                            Console.WriteLine(@"Monkey D. Luffy (/ˈluːfi/ LOO-fee) (Japanese: モンキー・D・ルフィ,
-Hepburn: Monkī Dī Rufi, [ɾɯɸiː]), also known as Straw Hat Luffy[n 1],
-is a fictional character and the main protagonist of the One Piece manga series,
-created by Eiichiro Oda. Luffy made his debut in One Piece Chapter #1 as a young boy who acquires the properties
-of rubber after accidentally eating the supernatural Gum-Gum Fruit.");
-                            break;
-
-                        case "roronoa zoro":
-                            Console.WriteLine(@"Roronoa Zoro (ロロノア・ゾロ, spelled as Roronoa Zolo or Roronoa Zollo
-in some English adaptations), nicknamed Pirate Hunter Zoro (海賊狩りのゾロ, Kaizoku-Gari no Zoro), 
-is a fictional character in the One Piece franchise created by Eiichiro Oda.");
-                            break;
-                    }
-                    break;
-
-            }
-            Console.ReadLine();
         }
     }
 }
