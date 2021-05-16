@@ -46,14 +46,13 @@ namespace ConsoleAnimations
         static void datas(string cc)
         {
             var con = Connz.sqlConnz;
-
             string sql = @"SELECT anime_charac.anime_char 
                            FROM anime_ INNER JOIN anime_charac 
                            ON anime_.anime_title = anime_charac.anime_fnum  
                            Where anime_charac.anime_fnum = '" + cc + "'";
 
-            string sql_desc = @"SELECT anime_description FROM anime_ WHERE anime_title = '" + cc + "'";
 
+            string sql_desc = @"SELECT anime_description FROM anime_ WHERE anime_title = '" + cc + "'";
             SqlCommand command = new SqlCommand(sql, con);
             SqlCommand command_desc = new SqlCommand(sql_desc, con);
 
@@ -71,8 +70,7 @@ namespace ConsoleAnimations
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("Characters:");
             con.Close();
-
-            // View characters
+            // view char
             con.Open();
             SqlDataReader reader = command.ExecuteReader();
             while (reader.Read())
@@ -85,7 +83,6 @@ namespace ConsoleAnimations
             }
             Console.WriteLine();
             con.Close();
-
             // search char
             bool w = true;
             while (w)
@@ -130,11 +127,9 @@ namespace ConsoleAnimations
                 }
             }
         }
-        static void _add()
+        static void view()
         {
             var con = Connz.sqlConnz;
-
-            Console.WriteLine("Anime Database");
 
             string sql = "select anime_title from anime_";
             SqlCommand command = new SqlCommand(sql, con);
@@ -148,6 +143,16 @@ namespace ConsoleAnimations
                     Console.WriteLine(reader.GetValue(t));
                 }
             }
+            return;
+        }
+  
+        static void _add()
+        {
+            var con = Connz.sqlConnz;
+            Console.WriteLine("Anime Database");
+
+            view();
+            Console.WriteLine("\n");
             con.Close();
 
             string _command = Console.ReadLine();
@@ -181,6 +186,28 @@ namespace ConsoleAnimations
                     con.Open();
                     cmd_mc.ExecuteNonQuery();
                     Console.WriteLine("Added mc");
+                    Console.Read();
+                    con.Close();
+                    break;
+
+                case "-update":
+                    Console.Clear();
+                    Console.WriteLine(@"
+                                        ▄▄▄▄▄▄ ▄     ▄ ▄ ▄       ▄ ▄▄▄▄▄
+                                        █    █ █▀▄   █ █ █▀▄   ▄▀█ █
+                                        ■■■■■■ █  ▀▄ █ █ █  ▀▄▀  █ █■■■■
+                                        █    █ █    ▀█ █ █       █ █▄▄▄▄");
+                    view();
+                    Console.SetIn(new StreamReader(Console.OpenStandardInput(8192)));
+                    Console.Write("Character: "); string up_mc = CapitalizeWords(Console.ReadLine());
+                    Console.Write("Description: "); string up_desc = Console.ReadLine().Replace("*", "\n\r").Replace('\'', ' ');
+                    Console.Write("Personality: "); string up_persona = Console.ReadLine().Replace("*", "\n\r").Replace('\'', ' ');
+                    Console.Write("Ability: "); string up_abi = Console.ReadLine().Replace("*", "\n\r").Replace('\'', ' ');
+                    string sql_up = "update anime_charac set anime_desc = '"+up_desc+"', anime_persona = '"+up_persona+"', anime_abilities = '"+up_abi+"' where anime_char = '"+up_mc+"'";
+                    SqlCommand cmd_up = new SqlCommand(sql_up, con);
+                    con.Open();
+                    cmd_up.ExecuteNonQuery();
+                    Console.WriteLine("update");
                     Console.Read();
                     con.Close();
                     break;
