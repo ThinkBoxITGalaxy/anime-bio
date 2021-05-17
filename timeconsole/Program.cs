@@ -20,16 +20,20 @@ namespace ConsoleAnimations
 
         public static void Main(string[] args)
         {
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("Anime Wikipedia\n");
-
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine(@"
+                    ▄▄▄▄▄▄ ▄     ▄ ▄ ▄       ▄ ▄▄▄▄▄   ▄     ▄ ▄ ▄   ▄ ▄ ▄▄▄   ▄▄▄▄▄ ▄▄▄▄   ▄ ▄▄▄▄▄▄
+                    █    █ █▀▄   █ █ █▀▄   ▄▀█ █       █     █ █ █ ▄▀  █ █  ▀▄ █     █   ▀▄ █ █    █
+                    ■■■■■■ █  ▀▄ █ █ █  ▀▄▀  █ █■■■■   █  ▄  █ █ █▀▄   █ █▄▄▀  █■■■■ █    █ █ ■■■■■■
+                    █    █ █    ▀█ █ █       █ █▄▄▄▄   █▄▀ ▀▄█ █ █  ▀▄ █ █     █▄▄▄▄ █▄▄▄▀  █ █    █" + "\n");
+            view();
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.Write("Search: ");
             string search = Console.ReadLine().ToLower();
+
             if (string.IsNullOrEmpty(search))
             {
                 Console.WriteLine("Please input your favorite anime");
-                return;
             }
             else if (search == "-insert")
             {
@@ -40,7 +44,6 @@ namespace ConsoleAnimations
             {
                 datas(search);
             }
-
             //  choosef();
         }
         static void datas(string cc)
@@ -127,6 +130,7 @@ namespace ConsoleAnimations
                 }
             }
         }
+//----------------------------------------------------------------------------
         static void view()
         {
             var con = Connz.sqlConnz;
@@ -140,12 +144,12 @@ namespace ConsoleAnimations
                 for (int t = 0; t < reader.FieldCount; t++)
                 {
                     Console.ForegroundColor = ConsoleColor.Cyan;
-                    Console.WriteLine(reader.GetValue(t));
+                    Console.Write(reader.GetValue(t)+"\t");
                 }
             }
-            return;
+            Console.WriteLine("\n");
         }
-  
+  // 2nd --------------------------------------------------------------------------------------
         static void _add()
         {
             var con = Connz.sqlConnz;
@@ -161,7 +165,7 @@ namespace ConsoleAnimations
                 case "-addtitle":
                     Console.SetIn(new StreamReader(Console.OpenStandardInput(8192)));
                     Console.Write("Title: "); string ani_title = Console.ReadLine();
-                    Console.Write("Description: "); string ani_desc = Console.ReadLine();
+                    Console.Write("Description: "); string ani_desc = Console.ReadLine().Replace("*", "\n\r").Replace('\'', ' ');
                     string sql_add = "insert into anime_(anime_title,anime_description) values ('{0}', '{1}')";
                     string format = String.Format(sql_add, ani_title, ani_desc);
                     SqlCommand cmd_add = new SqlCommand(format, con);
@@ -200,11 +204,12 @@ namespace ConsoleAnimations
                     view();
                     Console.SetIn(new StreamReader(Console.OpenStandardInput(8192)));
                     Console.Write("Character: "); string up_mc = CapitalizeWords(Console.ReadLine());
-                    Console.Write("Description: "); string up_desc = Console.ReadLine().Replace("*", "\n\r").Replace('\'', ' ');
-                    Console.Write("Personality: "); string up_persona = Console.ReadLine().Replace("*", "\n\r").Replace('\'', ' ');
-                    Console.Write("Ability: "); string up_abi = Console.ReadLine().Replace("*", "\n\r").Replace('\'', ' ');
+                    Console.Write("Description: "); string up_desc = Console.ReadLine().Replace("*", "\n\r").Replace("\'", "'+char(39)+'");
+                    Console.Write("Personality: "); string up_persona = Console.ReadLine().Replace("*", "\n\r").Replace("\'", "'+char(39)+'");
+                    Console.Write("Ability: "); string up_abi = Console.ReadLine().Replace("*", "\n\r").Replace("\'", "'+char(39)+'");
                     string sql_up = "update anime_charac set anime_desc = '"+up_desc+"', anime_persona = '"+up_persona+"', anime_abilities = '"+up_abi+"' where anime_char = '"+up_mc+"'";
                     SqlCommand cmd_up = new SqlCommand(sql_up, con);
+
                     con.Open();
                     cmd_up.ExecuteNonQuery();
                     Console.WriteLine("update");
@@ -213,6 +218,7 @@ namespace ConsoleAnimations
                     break;
             }
         }
+// Not mine ----------------------------------------------------------------
         public static string CapitalizeWords(string value)
         {
             if (value == null)
