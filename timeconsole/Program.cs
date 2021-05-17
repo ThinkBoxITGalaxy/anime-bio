@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using System.Threading;
 using System.Text;
 using System.IO;
+using System.Runtime.InteropServices;
 // anime database - username: anime passwor: 123
 
 
@@ -17,15 +18,34 @@ namespace ConsoleAnimations
 {
     class MainClass
     {
-
+        // not mine - stackoverflow
+        [DllImport("kernel32.dll", ExactSpelling = true)]
+        private static extern IntPtr GetConsoleWindow();
+        private static IntPtr ThisConsole = GetConsoleWindow();
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+        private const int HIDE = 0;
+        private const int MAXIMIZE = 3;
+        private const int MINIMIZE = 6;
+        private const int RESTORE = 9;
         public static void Main(string[] args)
+        {
+            // not mine - stackoverflow
+            Console.SetWindowSize(Console.LargestWindowWidth, Console.LargestWindowHeight);
+            ShowWindow(ThisConsole, MAXIMIZE);
+            
+            controls();
+            
+            //  choosef();
+        }
+        static void controls()
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine(@"
-                    ▄▄▄▄▄▄ ▄     ▄ ▄ ▄       ▄ ▄▄▄▄▄   ▄     ▄ ▄ ▄   ▄ ▄ ▄▄▄   ▄▄▄▄▄ ▄▄▄▄   ▄ ▄▄▄▄▄▄
-                    █    █ █▀▄   █ █ █▀▄   ▄▀█ █       █     █ █ █ ▄▀  █ █  ▀▄ █     █   ▀▄ █ █    █
-                    ■■■■■■ █  ▀▄ █ █ █  ▀▄▀  █ █■■■■   █  ▄  █ █ █▀▄   █ █▄▄▀  █■■■■ █    █ █ ■■■■■■
-                    █    █ █    ▀█ █ █       █ █▄▄▄▄   █▄▀ ▀▄█ █ █  ▀▄ █ █     █▄▄▄▄ █▄▄▄▀  █ █    █" + "\n");
+                                                                             ▄▄▄▄▄▄ ▄     ▄ ▄ ▄       ▄ ▄▄▄▄▄   ▄     ▄ ▄ ▄   ▄ ▄ ▄▄▄   ▄▄▄▄▄ ▄▄▄▄   ▄ ▄▄▄▄▄▄
+                                                                             █    █ █▀▄   █ █ █▀▄   ▄▀█ █       █     █ █ █ ▄▀  █ █  ▀▄ █     █   ▀▄ █ █    █
+                                                                             ■■■■■■ █  ▀▄ █ █ █  ▀▄▀  █ █■■■■   █  ▄  █ █ █▀▄   █ █▄▄▀  █■■■■ █    █ █ ■■■■■■
+                                                                             █    █ █    ▀█ █ █       █ █▄▄▄▄   █▄▀ ▀▄█ █ █  ▀▄ █ █     █▄▄▄▄ █▄▄▄▀  █ █    █ by: John Baidiango" + "\n");
             view();
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.Write("Search: ");
@@ -40,11 +60,16 @@ namespace ConsoleAnimations
                 Console.Clear();
                 _add();
             }
+            else if (search == "help")
+            {
+                Console.Clear();
+                Console.WriteLine("exit - Terminate the window\nclear - Back to main page");
+                controls();
+            }
             else
             {
                 datas(search);
             }
-            //  choosef();
         }
         static void datas(string cc)
         {
@@ -73,6 +98,7 @@ namespace ConsoleAnimations
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("Characters:");
             con.Close();
+
             // view char
             con.Open();
             SqlDataReader reader = command.ExecuteReader();
@@ -81,7 +107,7 @@ namespace ConsoleAnimations
                 for (int i = 0; i < reader.FieldCount; i++)
                 {
                     Console.ForegroundColor = ConsoleColor.DarkYellow;
-                    Console.WriteLine(reader.GetValue(i));
+                    Console.Write(reader.GetValue(i)+ " █ ");
                 }
             }
             Console.WriteLine();
@@ -107,7 +133,6 @@ namespace ConsoleAnimations
                     {
                         Console.ForegroundColor = ConsoleColor.Cyan;
                         Console.WriteLine(reader_search.GetValue(t));
-                        Console.WriteLine();
                     }
                 }
 
@@ -116,17 +141,16 @@ namespace ConsoleAnimations
                 {
                     w = false;
                 }
-                if (char_ == "help")
-                {
-                    Console.WriteLine("exit - Terminate the window\nclear - Back to main page");
-                }
                 if (char_ == "clear")
                 {
                     Console.Clear();
-                    Console.ForegroundColor = ConsoleColor.DarkCyan;
-                    Console.WriteLine("Anime Wikipedia\n");
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.Write("Search: ");
+                    controls();
+                }
+               if (char_ == "help")
+                {
+                    Console.Clear();
+                    Console.WriteLine("exit - Terminate the window\nclear - Back to main page");
+                    controls();
                 }
             }
         }
@@ -144,7 +168,7 @@ namespace ConsoleAnimations
                 for (int t = 0; t < reader.FieldCount; t++)
                 {
                     Console.ForegroundColor = ConsoleColor.Cyan;
-                    Console.Write(reader.GetValue(t)+"\t");
+                    Console.Write(reader.GetValue(t) + " || ");
                 }
             }
             Console.WriteLine("\n");
@@ -165,7 +189,7 @@ namespace ConsoleAnimations
                 case "-addtitle":
                     Console.SetIn(new StreamReader(Console.OpenStandardInput(8192)));
                     Console.Write("Title: "); string ani_title = Console.ReadLine();
-                    Console.Write("Description: "); string ani_desc = Console.ReadLine().Replace("*", "\n\r").Replace('\'', ' ');
+                    Console.Write("Description: "); string ani_desc = Console.ReadLine().Replace("*", "\n\r").Replace("\'", "' + char(39) + '");
                     string sql_add = "insert into anime_(anime_title,anime_description) values ('{0}', '{1}')";
                     string format = String.Format(sql_add, ani_title, ani_desc);
                     SqlCommand cmd_add = new SqlCommand(format, con);
@@ -180,9 +204,9 @@ namespace ConsoleAnimations
                     Console.SetIn(new StreamReader(Console.OpenStandardInput(8192)));
                     Console.Write("Anime: "); string mcworld = CapitalizeWords(Console.ReadLine());
                     Console.Write("Character: "); string mc = CapitalizeWords(Console.ReadLine());
-                    Console.Write("Bio: "); string mcdesc = Console.ReadLine().Replace("*", "\n\r").Replace('\'', ' ');
-                    Console.Write("Personality: "); string mcpersona = Console.ReadLine().Replace("*", "\n\r").Replace('\'', ' ');
-                    Console.Write("Abilities: "); string mcskills = Console.ReadLine().Replace("*", "\n\r").Replace('\'', ' ');
+                    Console.Write("Bio: "); string mcdesc = Console.ReadLine().Replace("*", "\n\r").Replace("\'", "' + char(39) + '");
+                    Console.Write("Personality: "); string mcpersona = Console.ReadLine().Replace("*", "\n\r").Replace("\'", "' + char(39) + '");
+                    Console.Write("Abilities: "); string mcskills = Console.ReadLine().Replace("*", "\n\r").Replace("\'", "' + char(39) + '");
 
                     string sql_mc = "insert into anime_charac(anime_fnum,anime_char,anime_desc,anime_persona,anime_abilities) values('{0}','{1}','{2}','{3}','{4}')";
                     string _format = String.Format(sql_mc, mcworld, mc, mcdesc, mcpersona, mcskills);
