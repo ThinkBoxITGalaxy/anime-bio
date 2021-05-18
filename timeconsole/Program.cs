@@ -28,14 +28,13 @@ namespace ConsoleAnimations
         private const int MAXIMIZE = 3;
         private const int MINIMIZE = 6;
         private const int RESTORE = 9;
+
         public static void Main(string[] args)
         {
             // not mine - stackoverflow
             Console.SetWindowSize(Console.LargestWindowWidth, Console.LargestWindowHeight);
             ShowWindow(ThisConsole, MAXIMIZE);
-            
             controls();
-            
             //  choosef();
         }
         static void controls()
@@ -107,7 +106,7 @@ namespace ConsoleAnimations
                 for (int i = 0; i < reader.FieldCount; i++)
                 {
                     Console.ForegroundColor = ConsoleColor.DarkYellow;
-                    Console.Write(reader.GetValue(i)+ " █ ");
+                    Console.Write(reader.GetValue(i) + " █ ");
                 }
             }
             Console.WriteLine();
@@ -146,7 +145,7 @@ namespace ConsoleAnimations
                     Console.Clear();
                     controls();
                 }
-               if (char_ == "help")
+                if (char_ == "help")
                 {
                     Console.Clear();
                     Console.WriteLine("exit - Terminate the window\nclear - Back to main page");
@@ -154,7 +153,7 @@ namespace ConsoleAnimations
                 }
             }
         }
-//----------------------------------------------------------------------------
+        //----------------------------------------------------------------------------
         static void view()
         {
             var con = Connz.sqlConnz;
@@ -173,12 +172,16 @@ namespace ConsoleAnimations
             }
             Console.WriteLine("\n");
         }
-  // 2nd --------------------------------------------------------------------------------------
+        // 2nd --------------------------------------------------------------------------------------
         static void _add()
         {
             var con = Connz.sqlConnz;
-            Console.WriteLine("Anime Database");
-
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.WriteLine(@"For further understanding type ""help""
+                                                                             ▄▄▄▄▄▄ ▄     ▄ ▄ ▄       ▄ ▄▄▄▄▄    ▄▄▄▄   ▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄ ▄▄▄▄   ▄▄▄▄▄▄ ▄▄▄▄▄▄ ▄▄▄▄▄
+                                                                             █    █ █▀▄   █ █ █▀▄   ▄▀█ █        █   ▀▄ █    █    █    █    █ █   █  █    █ █      █    
+                                                                             ■■■■■■ █  ▀▄ █ █ █  ▀▄▀  █ █■■■■    █    █ ■■■■■■    █    ■■■■■■ █▀▀▀▄  ■■■■■■ ▀▀▀▀▀█ █■■■■
+                                                                             █    █ █    ▀█ █ █       █ █▄▄▄▄    █▄▄▄▀  █    █    █    █    █ █▄▄▄▀  █    █ ▄▄▄▄▄█ █▄▄▄▄" + "\n");
             view();
             Console.WriteLine("\n");
             con.Close();
@@ -201,6 +204,7 @@ namespace ConsoleAnimations
                     break;
 
                 case "-addchar":
+                    Console.ForegroundColor = ConsoleColor.Green;
                     Console.SetIn(new StreamReader(Console.OpenStandardInput(8192)));
                     Console.Write("Anime: "); string mcworld = CapitalizeWords(Console.ReadLine());
                     Console.Write("Character: "); string mc = CapitalizeWords(Console.ReadLine());
@@ -231,7 +235,7 @@ namespace ConsoleAnimations
                     Console.Write("Description: "); string up_desc = Console.ReadLine().Replace("*", "\n\r").Replace("\'", "'+char(39)+'");
                     Console.Write("Personality: "); string up_persona = Console.ReadLine().Replace("*", "\n\r").Replace("\'", "'+char(39)+'");
                     Console.Write("Ability: "); string up_abi = Console.ReadLine().Replace("*", "\n\r").Replace("\'", "'+char(39)+'");
-                    string sql_up = "update anime_charac set anime_desc = '"+up_desc+"', anime_persona = '"+up_persona+"', anime_abilities = '"+up_abi+"' where anime_char = '"+up_mc+"'";
+                    string sql_up = "update anime_charac set anime_desc = '" + up_desc + "', anime_persona = '" + up_persona + "', anime_abilities = '" + up_abi + "' where anime_char = '" + up_mc + "'";
                     SqlCommand cmd_up = new SqlCommand(sql_up, con);
 
                     con.Open();
@@ -240,9 +244,24 @@ namespace ConsoleAnimations
                     Console.Read();
                     con.Close();
                     break;
+
+                case "help":
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                    Console.Write("-addtitle - add new anime\n-addchar - add new character\n-update - update existing character\n\nPress any key to continue...");
+                    Console.ReadKey();
+                    Console.Clear();
+                    _add();
+                    break;
+                default:
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Invalid keyword\n\nPress any key to continue...");
+                    Console.ReadKey();
+                    Console.Clear();
+                    _add();
+                    break;
             }
         }
-// Not mine ----------------------------------------------------------------
+        // Not mine ----------------------------------------------------------------
         public static string CapitalizeWords(string value)
         {
             if (value == null)
@@ -256,10 +275,10 @@ namespace ConsoleAnimations
                 if (char.IsWhiteSpace(result[i - 1]))
                     result[i] = char.ToUpper(result[i]);
             }
-
             return result.ToString();
         }
         // Still working from top of this comment--------------------------------------------------------------------------------------------
+        //▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
         // Pending from this comment and below-----------------------------------------------------------------------------------------------
         static void choosef()
         {
