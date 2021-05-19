@@ -7,6 +7,8 @@ using System.IO;
 using System.Runtime.InteropServices;
 // anime database - username: anime passwor: 123
 
+    // remove char and anime ttle --- 
+    // update anime title
 
 /* 
   For github links:
@@ -192,15 +194,39 @@ namespace ConsoleAnimations
                 case "-addtitle":
                     Console.SetIn(new StreamReader(Console.OpenStandardInput(8192)));
                     Console.Write("Title: "); string ani_title = Console.ReadLine();
+                    if (ani_title.ToLower() == "clear")
+                    {
+                        _add();
+                    }
+                    else if (ani_title.ToLower() == "home")
+                    {
+                        goto case "home";
+                    }
                     Console.Write("Description: "); string ani_desc = Console.ReadLine().Replace("*", "\n\r").Replace("\'", "' + char(39) + '");
-                    string sql_add = "insert into anime_(anime_title,anime_description) values ('{0}', '{1}')";
-                    string format = String.Format(sql_add, ani_title, ani_desc);
-                    SqlCommand cmd_add = new SqlCommand(format, con);
-                    con.Open();
-                    cmd_add.ExecuteNonQuery();
-                    Console.WriteLine("Added");
-                    Console.Read();
-                    con.Close();
+                    if (ani_desc.ToLower() == "clear")
+                    {
+                        _add();
+                    }
+                    else if (ani_desc.ToLower() == "home")
+                    {
+                        goto case "home";
+                    }
+                    else
+                    {
+                        string sql_add = "insert into anime_(anime_title,anime_description) values ('{0}', '{1}')";
+                        string format = String.Format(sql_add, ani_title, ani_desc);
+                        SqlCommand cmd_add = new SqlCommand(format, con);
+                        con.Open();
+                        cmd_add.ExecuteNonQuery();
+                        Console.WriteLine("Added");
+                        if (Console.ReadKey().Key == ConsoleKey.Enter)
+                        {
+                            Console.Clear();
+                            goto case "-addtitle";
+                        }
+
+                        con.Close();
+                    }
                     break;
 
                 case "-addchar":
@@ -245,14 +271,86 @@ namespace ConsoleAnimations
                     con.Close();
                     break;
 
+                case "-remove":
+                    Console.Clear();
+                    view();
+                    string deletion = Console.ReadLine();
+                    switch (deletion)
+                    {
+                        case "#terminate character":
+                            Console.WriteLine("This page is for deleting character from database...");
+                            Console.Write("Character: "); string del_char = CapitalizeWords(Console.ReadLine());
+                            string sql_delchar = "delete from anime_charac where anime_char = '"+del_char+"'";
+                            string sql_select = @"select anime_.anime_title from anime_ 
+                                                  INNER JOIN anime_charac 
+                                                  On anime_.anime_title = anime_charac.anime_char 
+                                                  Where anime_charac.anime_char = '" + del_char + "'";
+                            SqlCommand cmd_del = new SqlCommand(sql_delchar, con);
+                            SqlCommand cmd_sel = new SqlCommand(sql_select, con);
+                            Console.Write("Are you sure your want to remove {0}? Y/N", del_char);
+                            if (Console.ReadKey().Key == ConsoleKey.Y)
+                            {
+                                con.Open();
+                                cmd_del.ExecuteNonQuery();
+                                con.Close();
+
+                                con.Open();
+                                string data = "";
+                                SqlDataReader read = cmd_sel.ExecuteReader();
+                                while (read.Read())
+                                {
+                                    data = read[0].ToString();
+                                }
+                                Console.WriteLine(data);
+                                con.Close();
+                            }
+                            //else
+                            //{
+                            //    Console.WriteLine("Removing terminated");
+                            //    Console.Clear();
+                            //    goto case "#terminate character";
+                            //}
+                            break;
+
+                        case "#terminate anime":
+                            Console.WriteLine("This page is for deleting anime from database...");
+                            Console.Write("Anime: "); string del_ani = CapitalizeWords(Console.ReadLine());
+                            string sql_delani = "delete from anime_ where anime_title == '" + del_ani +"'";
+                            SqlCommand cmd_delani = new SqlCommand(sql_delani, con);
+                            Console.Write("Are you sure your want to remove {0}? Y/N", del_ani);
+                            if (Console.ReadKey().Key == ConsoleKey.Y)
+                            {
+                                con.Open();
+                                cmd_delani.ExecuteNonQuery();
+                                Console.WriteLine("Deleted {0}", del_ani);
+                                con.Close();
+                            }
+                            else
+                            {
+                                Console.WriteLine("Removing terminated");
+                                Console.Clear();
+                                goto case "#terminate character";
+                            }
+                            break;
+                    }
+                    if (Console.ReadKey().Key == ConsoleKey.Enter)
+                    {
+                        goto case "-remove";
+                    }
+                    break;
+
                 case "help":
                     Console.ForegroundColor = ConsoleColor.Gray;
-                    Console.Write("-addtitle - add new anime\n-addchar - add new character\n-update - update existing character\n\nPress any key to continue...");
+                    Console.Write("-addtitle - add new anime\n-addchar - add new character\n-update - update existing character\n-remove - delete something from database\nhome - back to main page\n\nPress any key to continue...");
                     Console.ReadKey();
                     Console.Clear();
                     _add();
                     break;
-                default:
+                case "home":
+                    Console.Clear();
+                    controls();
+                    break;
+                default: 
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("Invalid keyword\n\nPress any key to continue...");
                     Console.ReadKey();
