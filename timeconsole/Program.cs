@@ -18,7 +18,7 @@ using System.Runtime.InteropServices;
  */
 namespace ConsoleAnimations
 {
-    class MainClass
+    class MainClass : Query
     {
         // not mine - stackoverflow
         [DllImport("kernel32.dll", ExactSpelling = true)]
@@ -241,28 +241,13 @@ namespace ConsoleAnimations
                             Console.Clear();
                             goto case "-addtitle";
                         }
-
                         con.Close();
                     }
                     break;
 
                 case "-addchar":
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.SetIn(new StreamReader(Console.OpenStandardInput(8192)));
-                    Console.Write("Anime: "); string mcworld = CapitalizeWords(Console.ReadLine());
-                    Console.Write("Character: "); string mc = CapitalizeWords(Console.ReadLine());
-                    Console.Write("Bio: "); string mcdesc = Console.ReadLine().Replace("*", "\n\r").Replace("\'", "' + char(39) + '");
-                    Console.Write("Personality: "); string mcpersona = Console.ReadLine().Replace("*", "\n\r").Replace("\'", "' + char(39) + '");
-                    Console.Write("Abilities: "); string mcskills = Console.ReadLine().Replace("*", "\n\r").Replace("\'", "' + char(39) + '");
-
-                    string sql_mc = "insert into anime_charac(anime_fnum,anime_char,anime_desc,anime_persona,anime_abilities) values('{0}','{1}','{2}','{3}','{4}')";
-                    string _format = String.Format(sql_mc, mcworld, mc, mcdesc, mcpersona, mcskills);
-                    SqlCommand cmd_mc = new SqlCommand(_format, con);
-                    con.Open();
-                    cmd_mc.ExecuteNonQuery();
-                    Console.WriteLine("Added mc");
-                    Console.Read();
-                    con.Close();
+                   
+                    Query.SqlInsert();
                     break;
 
                 case "-update":
@@ -274,18 +259,12 @@ namespace ConsoleAnimations
                                         █    █ █    ▀█ █ █       █ █▄▄▄▄");
                     view();
                     Console.SetIn(new StreamReader(Console.OpenStandardInput(8192)));
-                    Console.Write("Character: "); string up_mc = CapitalizeWords(Console.ReadLine());
+                    Console.Write("Character: "); string up_mc = BigLetters.CapitalizeWords(Console.ReadLine());
                     Console.Write("Description: "); string up_desc = Console.ReadLine().Replace("*", "\n\r").Replace("\'", "'+char(39)+'");
                     Console.Write("Personality: "); string up_persona = Console.ReadLine().Replace("*", "\n\r").Replace("\'", "'+char(39)+'");
                     Console.Write("Ability: "); string up_abi = Console.ReadLine().Replace("*", "\n\r").Replace("\'", "'+char(39)+'");
-                    string sql_up = "update anime_charac set anime_desc = '" + up_desc + "', anime_persona = '" + up_persona + "', anime_abilities = '" + up_abi + "' where anime_char = '" + up_mc + "'";
-                    SqlCommand cmd_up = new SqlCommand(sql_up, con);
 
-                    con.Open();
-                    cmd_up.ExecuteNonQuery();
-                    Console.WriteLine("update");
-                    Console.Read();
-                    con.Close();
+                    Query.SqlUpdate(up_mc, up_desc, up_persona, up_abi);
                     break;
 
                 case "-remove":
@@ -297,7 +276,7 @@ namespace ConsoleAnimations
                         case "#terminate character":
                             Console.WriteLine("This page is for deleting character from database...");
                             Console.Write("Character: ");
-                            string del_char = CapitalizeWords(Console.ReadLine());
+                            string del_char = BigLetters.CapitalizeWords(Console.ReadLine());
                             if (del_char.Contains("List"))
                             {
                                 _charview(del_char.Replace("List ", ""));
@@ -330,7 +309,7 @@ namespace ConsoleAnimations
 
                         case "#terminate anime":
                             Console.WriteLine("This page is for deleting anime from database...");
-                            Console.Write("Anime: "); string del_ani = CapitalizeWords(Console.ReadLine());
+                            Console.Write("Anime: "); string del_ani = BigLetters.CapitalizeWords(Console.ReadLine());
                             string sql_delani = "delete from anime_ where anime_title == '" + del_ani + "'";
                             SqlCommand cmd_delani = new SqlCommand(sql_delani, con);
                             Console.Write("Are you sure your want to remove {0}? Y/N", del_ani);
@@ -376,21 +355,7 @@ namespace ConsoleAnimations
             }
         }
         // Not mine ----------------------------------------------------------------
-        public static string CapitalizeWords(string value)
-        {
-            if (value == null)
-                throw new ArgumentNullException("value");
-            if (value.Length == 0)
-                return value;
-            StringBuilder result = new StringBuilder(value);
-            result[0] = char.ToUpper(result[0]);
-            for (int i = 1; i < result.Length; ++i)
-            {
-                if (char.IsWhiteSpace(result[i - 1]))
-                    result[i] = char.ToUpper(result[i]);
-            }
-            return result.ToString();
-        }
+       
         // Still working from top of this comment--------------------------------------------------------------------------------------------
         //▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
         // Pending from this comment and below-----------------------------------------------------------------------------------------------
