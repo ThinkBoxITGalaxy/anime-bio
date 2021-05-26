@@ -18,7 +18,7 @@ using System.Runtime.InteropServices;
  */
 namespace ConsoleAnimations
 {
-    class MainClass : Query
+    class MainClass
     {
         // not mine - stackoverflow
         [DllImport("kernel32.dll", ExactSpelling = true)]
@@ -47,7 +47,7 @@ namespace ConsoleAnimations
                                                                              █    █ █▀▄   █ █ █▀▄   ▄▀█ █       █     █ █ █ ▄▀  █ █  ▀▄ █     █   ▀▄ █ █    █
                                                                              ■■■■■■ █  ▀▄ █ █ █  ▀▄▀  █ █■■■■   █  ▄  █ █ █▀▄   █ █▄▄▀  █■■■■ █    █ █ ■■■■■■
                                                                              █    █ █    ▀█ █ █       █ █▄▄▄▄   █▄▀ ▀▄█ █ █  ▀▄ █ █     █▄▄▄▄ █▄▄▄▀  █ █    █ by: John Baidiango" + "\n");
-            view();
+            Query.view();
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.Write("Search: ");
             string search = Console.ReadLine().ToLower();
@@ -156,24 +156,7 @@ namespace ConsoleAnimations
             }
         }
         //----------------------------------------------------------------------------
-        static void view()
-        {
-            var con = Connz.sqlConnz;
-
-            string sql = "select anime_title from anime_";
-            SqlCommand command = new SqlCommand(sql, con);
-            con.Open();
-            SqlDataReader reader = command.ExecuteReader();
-            while (reader.Read())
-            {
-                for (int t = 0; t < reader.FieldCount; t++)
-                {
-                    Console.ForegroundColor = ConsoleColor.Cyan;
-                    Console.Write(reader.GetValue(t) + " || ");
-                }
-            }
-            Console.WriteLine("\n");
-        }
+       
 
         static void _charview(string vchar)
         {
@@ -201,7 +184,7 @@ namespace ConsoleAnimations
                                                                              █    █ █▀▄   █ █ █▀▄   ▄▀█ █        █   ▀▄ █    █    █    █    █ █   █  █    █ █      █    
                                                                              ■■■■■■ █  ▀▄ █ █ █  ▀▄▀  █ █■■■■    █    █ ■■■■■■    █    ■■■■■■ █▀▀▀▄  ■■■■■■ ▀▀▀▀▀█ █■■■■
                                                                              █    █ █    ▀█ █ █       █ █▄▄▄▄    █▄▄▄▀  █    █    █    █    █ █▄▄▄▀  █    █ ▄▄▄▄▄█ █▄▄▄▄" + "\n");
-            view();
+            Query.view();
             Console.WriteLine("\n");
             con.Close();
 
@@ -246,8 +229,15 @@ namespace ConsoleAnimations
                     break;
 
                 case "-addchar":
-                   
-                    Query.SqlInsert();
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.SetIn(new StreamReader(Console.OpenStandardInput(8192)));
+                    Console.Write("Anime: "); string mcworld = BigLetters.CapitalizeWords(Console.ReadLine());
+                    Console.Write("Character: "); string mc = BigLetters.CapitalizeWords(Console.ReadLine());
+                    Console.Write("Bio: "); string mcdesc = Console.ReadLine().Replace("*", "\n\r").Replace("\'", "' + char(39) + '");
+                    Console.Write("Personality: "); string mcpersona = Console.ReadLine().Replace("*", "\n\r").Replace("\'", "' + char(39) + '");
+                    Console.Write("Abilities: "); string mcskills = Console.ReadLine().Replace("*", "\n\r").Replace("\'", "' + char(39) + '");
+
+                    Query.SqlInsert(mcworld, mc, mcdesc, mcpersona, mcskills);
                     break;
 
                 case "-update":
@@ -257,7 +247,7 @@ namespace ConsoleAnimations
                                         █    █ █▀▄   █ █ █▀▄   ▄▀█ █
                                         ■■■■■■ █  ▀▄ █ █ █  ▀▄▀  █ █■■■■
                                         █    █ █    ▀█ █ █       █ █▄▄▄▄");
-                    view();
+                    Query.view();
                     Console.SetIn(new StreamReader(Console.OpenStandardInput(8192)));
                     Console.Write("Character: "); string up_mc = BigLetters.CapitalizeWords(Console.ReadLine());
                     Console.Write("Description: "); string up_desc = Console.ReadLine().Replace("*", "\n\r").Replace("\'", "'+char(39)+'");
@@ -269,7 +259,7 @@ namespace ConsoleAnimations
 
                 case "-remove":
                     Console.Clear();
-                    view();
+                    Query.view();
                     string deletion = Console.ReadLine();
                     switch (deletion)
                     {
