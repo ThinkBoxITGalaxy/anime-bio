@@ -41,13 +41,13 @@ namespace ConsoleAnimations
         }
         static void controls()
         {
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine(@"
-                                                                             ▄▄▄▄▄▄ ▄     ▄ ▄ ▄       ▄ ▄▄▄▄▄   ▄     ▄ ▄ ▄   ▄ ▄ ▄▄▄   ▄▄▄▄▄ ▄▄▄▄   ▄ ▄▄▄▄▄▄
-                                                                             █    █ █▀▄   █ █ █▀▄   ▄▀█ █       █     █ █ █ ▄▀  █ █  ▀▄ █     █   ▀▄ █ █    █
-                                                                             ■■■■■■ █  ▀▄ █ █ █  ▀▄▀  █ █■■■■   █  ▄  █ █ █▀▄   █ █▄▄▀  █■■■■ █    █ █ ■■■■■■
-                                                                             █    █ █    ▀█ █ █       █ █▄▄▄▄   █▄▀ ▀▄█ █ █  ▀▄ █ █     █▄▄▄▄ █▄▄▄▀  █ █    █ by: John Baidiango" + "\n");
-            Query.view();
+            Logo.AnimeWikipedia();
+
+            string viewchar_controls = "select anime_title from anime_";
+            string mainpage_view = " || ";
+
+            Query.view(viewchar_controls, mainpage_view);
+
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.Write("Search: ");
             string search = Console.ReadLine().ToLower();
@@ -75,44 +75,17 @@ namespace ConsoleAnimations
         static void datas(string cc)
         {
             var con = Connz.sqlConnz;
-            string sql = @"SELECT anime_charac.anime_char 
+            Console.Write("Characters");
+            string mainchar_list = @"SELECT anime_charac.anime_char 
                            FROM anime_ INNER JOIN anime_charac 
                            ON anime_.anime_title = anime_charac.anime_fnum  
                            Where anime_charac.anime_fnum = '" + cc + "'";
+            string anime_desc = @"SELECT anime_description FROM anime_ WHERE anime_title = '" + cc + "'";
+            string barrier = " : ";
 
+            Query.view(mainchar_list, barrier);
+            Query.UnloopView(anime_desc);
 
-            string sql_desc = @"SELECT anime_description FROM anime_ WHERE anime_title = '" + cc + "'";
-            SqlCommand command = new SqlCommand(sql, con);
-            SqlCommand command_desc = new SqlCommand(sql_desc, con);
-
-            con.Open();
-            string desc = "";
-            SqlDataReader reader_desc = command_desc.ExecuteReader();
-            while (reader_desc.Read())
-            {
-                Console.ForegroundColor = ConsoleColor.DarkCyan;
-                desc = reader_desc[0].ToString();
-            }
-
-            Console.WriteLine(desc + "\n");
-
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("Characters:");
-            con.Close();
-
-            // view char
-            con.Open();
-            SqlDataReader reader = command.ExecuteReader();
-            while (reader.Read())
-            {
-                for (int i = 0; i < reader.FieldCount; i++)
-                {
-                    Console.ForegroundColor = ConsoleColor.DarkYellow;
-                    Console.Write(reader.GetValue(i) + " █ ");
-                }
-            }
-            Console.WriteLine();
-            con.Close();
             // search char
             bool w = true;
             while (w)
@@ -120,24 +93,14 @@ namespace ConsoleAnimations
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.Write("Search characters: ");
                 string char_ = Console.ReadLine();
-                string sql_search = @"SELECT anime_charac.anime_desc,anime_charac.anime_persona,anime_abilities
+                string sss = "";
+                string search_char = @"SELECT anime_charac.anime_desc,anime_charac.anime_persona,anime_abilities
                            FROM anime_ INNER JOIN anime_charac 
                            ON anime_.anime_title = anime_charac.anime_fnum  
                            Where anime_charac.anime_char = '" + char_ + "'";
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Query.view(search_char, sss);
 
-                SqlCommand command_search = new SqlCommand(sql_search, con);
-                con.Open();
-                SqlDataReader reader_search = command_search.ExecuteReader();
-                while (reader_search.Read())
-                {
-                    for (int t = 0; t < reader_search.FieldCount; t++)
-                    {
-                        Console.ForegroundColor = ConsoleColor.Cyan;
-                        Console.WriteLine(reader_search.GetValue(t));
-                    }
-                }
-
-                con.Close();
                 if (char_ == "exit")
                 {
                     w = false;
@@ -155,36 +118,15 @@ namespace ConsoleAnimations
                 }
             }
         }
-        //----------------------------------------------------------------------------
-       
-
-        static void _charview(string vchar)
-        {
-            var con = Connz.sqlConnz;
-            string sql = "select anime_char from anime_charac where anime_fnum = '" + vchar + "'";
-            SqlCommand command = new SqlCommand(sql, con);
-            con.Open();
-            SqlDataReader reader = command.ExecuteReader();
-            while (reader.Read())
-            {
-                for (int i = 0; i < reader.FieldCount; i++)
-                {
-                    Console.WriteLine(reader.GetValue(i));
-                }
-            }
-            con.Close();
-        }
         // 2nd --------------------------------------------------------------------------------------
         static void _add()
         {
             var con = Connz.sqlConnz;
+            string viewchar = "select anime_title from anime_";
+            string database_view = " || ";
             Console.ForegroundColor = ConsoleColor.DarkYellow;
-            Console.WriteLine(@"For further understanding type ""help""
-                                                                             ▄▄▄▄▄▄ ▄     ▄ ▄ ▄       ▄ ▄▄▄▄▄    ▄▄▄▄   ▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄ ▄▄▄▄   ▄▄▄▄▄▄ ▄▄▄▄▄▄ ▄▄▄▄▄
-                                                                             █    █ █▀▄   █ █ █▀▄   ▄▀█ █        █   ▀▄ █    █    █    █    █ █   █  █    █ █      █    
-                                                                             ■■■■■■ █  ▀▄ █ █ █  ▀▄▀  █ █■■■■    █    █ ■■■■■■    █    ■■■■■■ █▀▀▀▄  ■■■■■■ ▀▀▀▀▀█ █■■■■
-                                                                             █    █ █    ▀█ █ █       █ █▄▄▄▄    █▄▄▄▀  █    █    █    █    █ █▄▄▄▀  █    █ ▄▄▄▄▄█ █▄▄▄▄" + "\n");
-            Query.view();
+            Logo.AnimeDatabase();
+            Query.view(viewchar, database_view);
             Console.WriteLine("\n");
             con.Close();
 
@@ -202,7 +144,8 @@ namespace ConsoleAnimations
                     {
                         goto case "home";
                     }
-                    Console.Write("Description: "); string ani_desc = Console.ReadLine().Replace("*", "\n\r").Replace("\'", "' + char(39) + '");
+                    Console.Write("Description: ");
+                    string ani_desc = Console.ReadLine().Replace("*", "\n\r").Replace("\'", "' + char(39) + '");
                     if (ani_desc.ToLower() == "clear")
                     {
                         _add();
@@ -213,18 +156,12 @@ namespace ConsoleAnimations
                     }
                     else
                     {
-                        string sql_add = "insert into anime_(anime_title,anime_description) values ('{0}', '{1}')";
-                        string format = String.Format(sql_add, ani_title, ani_desc);
-                        SqlCommand cmd_add = new SqlCommand(format, con);
-                        con.Open();
-                        cmd_add.ExecuteNonQuery();
-                        Console.WriteLine("Added");
+                        Query.SqlInsertAnime(ani_title, ani_desc);
                         if (Console.ReadKey().Key == ConsoleKey.Enter)
                         {
                             Console.Clear();
                             goto case "-addtitle";
                         }
-                        con.Close();
                     }
                     break;
 
@@ -237,17 +174,15 @@ namespace ConsoleAnimations
                     Console.Write("Personality: "); string mcpersona = Console.ReadLine().Replace("*", "\n\r").Replace("\'", "' + char(39) + '");
                     Console.Write("Abilities: "); string mcskills = Console.ReadLine().Replace("*", "\n\r").Replace("\'", "' + char(39) + '");
 
-                    Query.SqlInsert(mcworld, mc, mcdesc, mcpersona, mcskills);
+                    Query.SqlInsertCharacter(mcworld, mc, mcdesc, mcpersona, mcskills);
                     break;
 
                 case "-update":
                     Console.Clear();
-                    Console.WriteLine(@"
-                                        ▄▄▄▄▄▄ ▄     ▄ ▄ ▄       ▄ ▄▄▄▄▄
-                                        █    █ █▀▄   █ █ █▀▄   ▄▀█ █
-                                        ■■■■■■ █  ▀▄ █ █ █  ▀▄▀  █ █■■■■
-                                        █    █ █    ▀█ █ █       █ █▄▄▄▄");
-                    Query.view();
+                    string viewchar_update = "select anime_title from anime_";
+                    string update_view = " || ";
+                    Logo.Anime();
+                    Query.view(viewchar_update, update_view);
                     Console.SetIn(new StreamReader(Console.OpenStandardInput(8192)));
                     Console.Write("Character: "); string up_mc = BigLetters.CapitalizeWords(Console.ReadLine());
                     Console.Write("Description: "); string up_desc = Console.ReadLine().Replace("*", "\n\r").Replace("\'", "'+char(39)+'");
@@ -259,7 +194,10 @@ namespace ConsoleAnimations
 
                 case "-remove":
                     Console.Clear();
-                    Query.view();
+                    string viewchar_remove = "select anime_title from anime_";
+                    string remove_view = "\n";
+                    Query.view(viewchar_remove, remove_view);
+
                     string deletion = Console.ReadLine();
                     switch (deletion)
                     {
@@ -267,28 +205,21 @@ namespace ConsoleAnimations
                             Console.WriteLine("This page is for deleting character from database...");
                             Console.Write("Character: ");
                             string del_char = BigLetters.CapitalizeWords(Console.ReadLine());
+                            string view_chars = "select anime_char from anime_charac where anime_fnum = '" + del_char.Replace("List ", "") + "'";
+                            string removelist_view = "\n";
                             if (del_char.Contains("List"))
                             {
-                                _charview(del_char.Replace("List ", ""));
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Query.view(view_chars, removelist_view);
                             }
-                            string sql_select = "select anime_fnum from anime_charac where anime_char = '" + del_char + "'";
-                            SqlCommand cmd_sel = new SqlCommand(sql_select, con);
-                            con.Open();
-                            SqlDataReader read = cmd_sel.ExecuteReader();
-                            while (read.Read())
-                            {
-                                for (int i = 0; i < read.FieldCount; i++)
-                                {
-                                    Console.WriteLine("Successfully deleted {0} from anime {1}.", del_char, read.GetValue(i)); ;
-                                }
-                            }
-                            con.Close();
 
-                            string sql_delchar = "delete from anime_charac where anime_char = '" + del_char + "'";
-                            SqlCommand cmd_del = new SqlCommand(sql_delchar, con);
-                            con.Open();
-                            cmd_del.ExecuteNonQuery();
-                            con.Close();
+                            string view_del = "select anime_fnum from anime_charac where anime_char = '" + del_char + "'";
+                            string view_post = "Successfully deleted " + del_char + " from anime ";
+                            Query.view(view_del, view_post);
+
+                            string chardel = "delete from anime_charac where anime_char = '" + del_char + "'";
+
+                            Query.SqlDelete(chardel);
 
                             if (Console.ReadKey().Key == ConsoleKey.Enter)
                             {
@@ -300,17 +231,16 @@ namespace ConsoleAnimations
                         case "#terminate anime":
                             Console.WriteLine("This page is for deleting anime from database...");
                             Console.Write("Anime: "); string del_ani = BigLetters.CapitalizeWords(Console.ReadLine());
-                            string sql_delani = "delete from anime_ where anime_title == '" + del_ani + "'";
-                            SqlCommand cmd_delani = new SqlCommand(sql_delani, con);
+
+                            string anime_delete = "delete from anime_ where anime_title = '" + del_ani + "'";
+
                             Console.Write("Are you sure your want to remove {0}? Y/N", del_ani);
                             if (Console.ReadKey().Key == ConsoleKey.Y)
                             {
-                                con.Open();
-                                cmd_delani.ExecuteNonQuery();
-                                Console.WriteLine("Deleted {0}", del_ani);
-                                con.Close();
+                                Query.SqlDelete(anime_delete);
+                                Console.WriteLine("\nDeleted {0}", del_ani);
                             }
-                            else
+                            else if (Console.ReadKey().Key == ConsoleKey.N)
                             {
                                 Console.WriteLine("Removing terminated");
                                 Console.Clear();
@@ -345,7 +275,7 @@ namespace ConsoleAnimations
             }
         }
         // Not mine ----------------------------------------------------------------
-       
+
         // Still working from top of this comment--------------------------------------------------------------------------------------------
         //▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
         // Pending from this comment and below-----------------------------------------------------------------------------------------------
